@@ -143,7 +143,7 @@ USERNAME = "Siddhart111"
 
 
 def github_tag(right: float, bottom: float, size: float = 16) -> str:
-    """A small white pill - the GitHub mark and my username - anchored by its bottom-right corner."""
+    """A small white square-cornered tag - the GitHub mark and my username - anchored by its bottom-right corner."""
     from fontTools.ttLib import TTFont
     mono = TTFont(CACHE / FONTS["GeistMono"][0])
     advance = mono["hmtx"]["zero"][0] / mono["head"].unitsPerEm
@@ -153,8 +153,8 @@ def github_tag(right: float, bottom: float, size: float = 16) -> str:
     w = pad + mark + size * .6 + text_w + pad
     x, y = right - w, bottom - h
     k = mark / 16
-    return (f'<rect x="{n(x)}" y="{n(y + 3)}" width="{n(w)}" height="{n(h)}" rx="{n(h / 2)}" fill="#000" opacity=".2" filter="url(#soft)"/>'
-            f'<rect x="{n(x)}" y="{n(y)}" width="{n(w)}" height="{n(h)}" rx="{n(h / 2)}" fill="#fff"/>'
+    return (f'<rect x="{n(x)}" y="{n(y + 3)}" width="{n(w)}" height="{n(h)}" fill="#000" opacity=".2" filter="url(#soft)"/>'
+            f'<rect x="{n(x)}" y="{n(y)}" width="{n(w)}" height="{n(h)}" fill="#fff"/>'
             f'<path d="{GITHUB_MARK}" fill="{C["ink"]}" transform="translate({n(x + pad)} {n(y + (h - mark) / 2)}) scale({k:.4g})"/>'
             f'<text x="{n(x + pad + mark + size * .6)}" y="{n(y + h / 2)}" dominant-baseline="central" font-family="GeistMono" '
             f'font-weight="500" font-size="{n(size)}" letter-spacing="{n(track * size)}" fill="{C["ink"]}">{USERNAME}</text>')
