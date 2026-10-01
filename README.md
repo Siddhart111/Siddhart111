@@ -7,6 +7,6 @@
 
 Designer and engineer. Founder of [Future](https://www.heyfuture.site), a dating app with an AI matchmaker: Aria gets to know you in a real conversation, then hand-picks two people a day. No swiping.
 
-Live on the [App Store](https://apps.apple.com/app/id6794028012) and [Google Play](https://play.google.com/store/apps/details?id=com.future.dating). Based in Lucknow, India.
+Live on the [App Store](https://apps.apple.com/app/id6794028012) and [Google Play](https://play.google.com/store/apps/details?id=com.future.dating). Based in Dehradun, India.
 
 <samp>---------------------------------------------------------------------</samp>
