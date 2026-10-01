@@ -134,6 +134,32 @@ def sticker(x: float, y: float, s: float, rot: float) -> str:
             f'<image href="data:image/png;base64,{icon}" x="{n(x)}" y="{n(y)}" width="{n(s)}" height="{n(s)}" clip-path="url(#{uid})"/></g>')
 
 
+GITHUB_MARK = ("M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49"
+               "-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52"
+               ".28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18"
+               " 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87"
+               " 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z")
+USERNAME = "Siddhart111"
+
+
+def github_tag(right: float, bottom: float, size: float = 16) -> str:
+    """A small white pill - the GitHub mark and my username - anchored by its bottom-right corner."""
+    from fontTools.ttLib import TTFont
+    mono = TTFont(CACHE / FONTS["GeistMono"][0])
+    advance = mono["hmtx"]["zero"][0] / mono["head"].unitsPerEm
+    track = .04
+    text_w = len(USERNAME) * advance * size + (len(USERNAME) - 1) * track * size
+    h, pad, mark = size * 2.4, size * .95, size * 1.25
+    w = pad + mark + size * .6 + text_w + pad
+    x, y = right - w, bottom - h
+    k = mark / 16
+    return (f'<rect x="{n(x)}" y="{n(y + 3)}" width="{n(w)}" height="{n(h)}" rx="{n(h / 2)}" fill="#000" opacity=".2" filter="url(#soft)"/>'
+            f'<rect x="{n(x)}" y="{n(y)}" width="{n(w)}" height="{n(h)}" rx="{n(h / 2)}" fill="#fff"/>'
+            f'<path d="{GITHUB_MARK}" fill="{C["ink"]}" transform="translate({n(x + pad)} {n(y + (h - mark) / 2)}) scale({k:.4g})"/>'
+            f'<text x="{n(x + pad + mark + size * .6)}" y="{n(y + h / 2)}" dominant-baseline="central" font-family="GeistMono" '
+            f'font-weight="500" font-size="{n(size)}" letter-spacing="{n(track * size)}" fill="{C["ink"]}">{USERNAME}</text>')
+
+
 def giant(ch: str, x: float, y: float, size: float, color: str) -> str:
     return (f'<text x="{n(x)}" y="{n(y)}" font-family="Bricolage" font-weight="800" font-size="{n(size)}" fill="{color}" '
             f'style="font-variation-settings:\'opsz\' 96,\'wdth\' 75">{ch}</text>')
@@ -166,7 +192,6 @@ def desktop() -> tuple[int, int, str]:
         photo(P["px"], P["py"], P["pr"], "pc", 2),
         sticker(1112, 186, 104, 9),
         sticker(150, 300, 96, -12),
-        sticker(292, 372, 104, 11),
         sticker(470, 14, 84, 12),
         sparkle(735, 598, 20, C["white"]),
         sparkle(1015, 590, 16, C["white"]),
@@ -197,7 +222,6 @@ def phone() -> tuple[int, int, str]:
         photo(680, 790, 330, "pc", 1),
         sticker(880, 1110, 150, -8),
         sticker(160, 420, 120, -12),
-        sticker(236, 598, 112, 12),
         sticker(566, 290, 104, -8),
         sparkle(990, 330, 30, C["white"]),
         sparkle(120, 1060, 20, C["white"]),
@@ -230,10 +254,10 @@ def linkedin() -> tuple[int, int, str]:
         photo(712, 200, 168, "pc", 2),
         sticker(1196, 206, 92, 9),
         sticker(120, 110, 76, -12),
-        sticker(262, 128, 82, 10),
         sticker(500, 14, 70, 12),
         sparkle(604, 372, 16, C["white"]),
         sparkle(1550, 196, 15, C["white"]),
+        github_tag(1500, 368, 16),
         sparkle(950, 362, 12, C["white"]),
     ])
 
