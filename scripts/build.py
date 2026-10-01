@@ -126,11 +126,12 @@ def sticker(x: float, y: float, s: float, rot: float) -> str:
     """The Future app icon, stuck on at an angle."""
     icon = base64.b64encode((ASSETS / "src" / "future-icon.png").read_bytes()).decode()
     rx = s * .225
+    uid = f"ic{round(x)}_{round(y)}"
     return (f'<g transform="rotate({rot} {n(x + s / 2)} {n(y + s / 2)})">'
             f'<rect x="{n(x - 5)}" y="{n(y + 3)}" width="{n(s + 10)}" height="{n(s + 10)}" rx="{n(rx + 5)}" fill="#000" opacity=".22" filter="url(#soft)"/>'
             f'<rect x="{n(x - 5)}" y="{n(y - 5)}" width="{n(s + 10)}" height="{n(s + 10)}" rx="{n(rx + 5)}" fill="#fff"/>'
-            f'<clipPath id="ic"><rect x="{n(x)}" y="{n(y)}" width="{n(s)}" height="{n(s)}" rx="{n(rx)}"/></clipPath>'
-            f'<image href="data:image/png;base64,{icon}" x="{n(x)}" y="{n(y)}" width="{n(s)}" height="{n(s)}" clip-path="url(#ic)"/></g>')
+            f'<clipPath id="{uid}"><rect x="{n(x)}" y="{n(y)}" width="{n(s)}" height="{n(s)}" rx="{n(rx)}"/></clipPath>'
+            f'<image href="data:image/png;base64,{icon}" x="{n(x)}" y="{n(y)}" width="{n(s)}" height="{n(s)}" clip-path="url(#{uid})"/></g>')
 
 
 def giant(ch: str, x: float, y: float, size: float, color: str) -> str:
@@ -164,7 +165,10 @@ def desktop() -> tuple[int, int, str]:
         polka(905, 640, 112, "pk"),
         photo(P["px"], P["py"], P["pr"], "pc", 2),
         sticker(1112, 186, 104, 9),
-        sparkle(540, 70, 22, C["white"]),
+        sticker(150, 300, 96, -12),
+        sticker(292, 372, 104, 11),
+        sticker(470, 14, 84, 12),
+        sparkle(735, 598, 20, C["white"]),
         sparkle(1015, 590, 16, C["white"]),
         sparkle(395, 610, 13, C["yellow"]),
     ])
@@ -192,6 +196,9 @@ def phone() -> tuple[int, int, str]:
         polka(200, 1300, 170, "pk", 40, 10),
         photo(680, 790, 330, "pc", 1),
         sticker(880, 1110, 150, -8),
+        sticker(160, 420, 120, -12),
+        sticker(236, 598, 112, 12),
+        sticker(566, 290, 104, -8),
         sparkle(990, 330, 30, C["white"]),
         sparkle(120, 1060, 20, C["white"]),
     ])
@@ -222,7 +229,10 @@ def linkedin() -> tuple[int, int, str]:
         polka(1060, 418, 96, "pk", 30, 7.5),
         photo(712, 200, 168, "pc", 2),
         sticker(1196, 206, 92, 9),
-        sparkle(560, 52, 20, C["white"]),
+        sticker(120, 110, 76, -12),
+        sticker(262, 128, 82, 10),
+        sticker(500, 14, 70, 12),
+        sparkle(604, 372, 16, C["white"]),
         sparkle(1550, 196, 15, C["white"]),
         sparkle(950, 362, 12, C["white"]),
     ])
