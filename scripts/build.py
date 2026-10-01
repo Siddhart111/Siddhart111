@@ -197,6 +197,37 @@ def phone() -> tuple[int, int, str]:
     ])
 
 
+def linkedin() -> tuple[int, int, str]:
+    """LinkedIn's banner, 1584 x 396 (4:1). LinkedIn lays the profile photo over the bottom
+    left (about x < 380, y > 230 here) and phones trim the sides a little, so the name and
+    the photo sit in the middle and the right; only the letters circle runs under the photo."""
+    W, H = 1584, 396
+    return W, H, "".join([
+        f'<rect width="{W}" height="{H}" fill="{C["violet"]}"/>',
+        f'<rect x="520" width="520" height="{H}" fill="{C["green"]}"/>',
+        f'<rect x="1040" width="{W - 1040}" height="{H}" fill="{C["orange"]}"/>',
+        giant("S", -30, 470, 600, C["lime"]),
+        giant("N", 1300, 560, 600, C["yellow"]),
+        f'<circle cx="235" cy="205" r="232" fill="{C["blue"]}"/>',
+        letters(235, 205, 176, 52),
+        f'<clipPath id="kc"><circle cx="1395" cy="372" r="206"/></clipPath>',
+        f'<circle cx="1395" cy="372" r="206" fill="{C["pink"]}"/>',
+        f'<g clip-path="url(#kc)">{contours(1425, 392, 11, 22)}</g>',
+        f'<rect x="938" width="{W - 938}" height="148" fill="{C["white"]}"/>',
+        f'<text x="968" y="86" font-family="Bricolage" font-weight="700" font-size="64" fill="#FF2A00" '
+        f'letter-spacing="-1.6" style="font-variation-settings:\'opsz\' 96">{NAME}</text>',
+        f'<text x="971" y="121" font-family="GeistMono" font-weight="500" font-size="14" fill="{C["ink"]}" '
+        f'letter-spacing="1.7">{CAPTION}</text>',
+        f'<circle cx="868" cy="318" r="92" fill="{C["yellow"]}"/>',
+        polka(1060, 418, 96, "pk", 30, 7.5),
+        photo(712, 200, 168, "pc", 2),
+        sticker(1196, 206, 92, 9),
+        sparkle(560, 52, 20, C["white"]),
+        sparkle(1550, 196, 15, C["white"]),
+        sparkle(950, 362, 12, C["white"]),
+    ])
+
+
 def render(layout, out: Path, scale: int) -> None:
     W, H, body = layout()
     svg = (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">'
