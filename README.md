@@ -9,4 +9,4 @@ Designer and engineer. Founder of [Future](https://www.heyfuture.site), a dating
 
 Live on the [App Store](https://apps.apple.com/app/id6794028012) and [Google Play](https://play.google.com/store/apps/details?id=com.future.dating). Based in Lucknow, India.
 
-<samp>REACT NATIVE · TYPESCRIPT · PYTHON · FASTAPI · MONGODB · GEMINI</samp>
+<samp>------------------------------------------</samp>
