@@ -161,7 +161,7 @@ def github_tag(right: float, bottom: float, size: float = 16) -> str:
 
 
 COUNT = "2,000+"                     # the owner's number for the banner (2 Oct)
-COUNT_LABEL = "PEOPLE JOINED FUTURE"
+COUNT_LABEL = "JOINED FUTURE"
 
 
 def _gauss(color: str, peak: float = 1.0) -> str:
@@ -169,39 +169,75 @@ def _gauss(color: str, peak: float = 1.0) -> str:
                    f'stop-opacity="{peak * math.exp(-4.5 * (x / 10) ** 2) if x < 10 else 0:.3f}"/>' for x in range(11))
 
 
-def aria_face(cx: float, cy: float, r: float) -> str:
-    """Aria as she is in the app (AriaPearl): a rose pearl with blobs of colour, a soft halo,
-    two espresso eyes and a one-line smile. Still, here - it's a picture."""
-    blobs = [("#EC86A5", .52, -.18, .05), ("#FFBBA0", .46, .2, -.12), ("#FFD8BE", .42, -.05, .22),
-             ("#FFE9F0", .38, .1, .02), ("#E0668C", .34, .22, .2)]
-    defs = ['<radialGradient id="ab"><stop offset="0" stop-color="#F9CAD7"/><stop offset=".55" stop-color="#F0A0B8"/>'
-            '<stop offset=".82" stop-color="#EA8CA9" stop-opacity=".9"/><stop offset=".95" stop-color="#E8829F" stop-opacity=".4"/>'
-            '<stop offset="1" stop-color="#E8829F" stop-opacity="0"/></radialGradient>',
-            f'<radialGradient id="ah">{_gauss("#EC86A5", .28)}</radialGradient>',
-            f'<radialGradient id="ash">{_gauss("#FFFFFF", .7)}</radialGradient>']
-    defs += [f'<radialGradient id="ag{i}">{_gauss(c)}</radialGradient>' for i, (c, *_) in enumerate(blobs)]
-    out = [f'<defs>{"".join(defs)}</defs>',
-           f'<circle cx="{n(cx)}" cy="{n(cy)}" r="{n(r * 1.35)}" fill="url(#ah)"/>',
-           f'<circle cx="{n(cx)}" cy="{n(cy)}" r="{n(r)}" fill="url(#ab)"/>']
-    out += [f'<circle cx="{n(cx + dx * r)}" cy="{n(cy + dy * r)}" r="{n(s * r)}" fill="url(#ag{i})" opacity=".85"/>'
-            for i, (_, s, dx, dy) in enumerate(blobs)]
-    hx, hy = cx - r * .3, cy - r * .36
-    out.append(f'<ellipse cx="{n(hx)}" cy="{n(hy)}" rx="{n(r * .42)}" ry="{n(r * .28)}" transform="rotate(-28 {n(hx)} {n(hy)})" fill="url(#ash)"/>')
-    out += [f'<ellipse cx="{n(cx + d * r * .23)}" cy="{n(cy - r * .04)}" rx="{n(r * .062)}" ry="{n(r * .095)}" fill="#2B1D22"/>' for d in (-1, 1)]
-    out.append(f'<path d="M{n(cx - r * .11)} {n(cy + r * .17)}Q{n(cx)} {n(cy + r * .245)} {n(cx + r * .11)} {n(cy + r * .17)}" '
-               f'fill="none" stroke="#2B1D22" stroke-width="{n(r * .03)}" stroke-linecap="round"/>')
-    return "".join(out)
+# Aria exactly as the app draws her (frontend/src/ui/AriaPearl.tsx), as one still frame:
+# colour, size, swing, height, period, phase, opacity of each blob of colour
+ARIA_BLOBS = [("#EC86A5", .52, .15, -.06, 1.0, 0.0, .85), ("#FFBBA0", .48, .16, .10, 1.3, .35, .85),
+              ("#FFD8BE", .44, .14, -.14, 1.6, .7, .8), ("#FFE9F0", .40, .12, .04, 1.15, .5, .85),
+              ("#E0668C", .36, .16, .12, 1.9, .15, .6)]
+ARIA_BODY = [(0, "#FCE1EA", .96), (.3, "#F3B2C7", .95), (.42, "#EDA5BD", .93), (.478, "#EBA0B8", .904),
+             (.536, "#EBA0B8", .833), (.594, "#EBA0B8", .729), (.652, "#EBA0B8", .603), (.71, "#EBA0B8", .465),
+             (.768, "#EBA0B8", .327), (.826, "#EBA0B8", .201), (.884, "#EBA0B8", .097), (.942, "#EBA0B8", .026),
+             (1, "#EBA0B8", 0)]
+ARIA_HALO = [(.3, 0), (.44, .14), (.58, .17), (.7, .12), (.82, .055), (.92, .015), (1, 0)]
+EYE = "#2B1D22"
+
+
+def aria(cx: float, cy: float, size: float) -> str:
+    """Her face as in the app: a soft rose pearl that melts into the page, colour drifting
+    inside, a glossy spot, the grain, two espresso eyes with a highlight, a line of a smile."""
+    D = size * .92
+    x0, y0 = cx - D / 2, cy - D / 2               # the pearl's box
+    top = cy - size / 2                           # the face box (eyes at .41, smile at .55)
+    grain = base64.b64encode((ASSETS / "src" / "aria-grain.png").read_bytes()).decode()
+    defs = ['<radialGradient id="aHalo">' + "".join(f'<stop offset="{o}" stop-color="#EDA5BD" stop-opacity="{a}"/>'
+                                                   for o, a in ARIA_HALO) + '</radialGradient>',
+            '<radialGradient id="aBody" cx="50%" cy="50%" r="50%" fx="45%" fy="42%">'
+            + "".join(f'<stop offset="{o}" stop-color="{c}" stop-opacity="{a}"/>' for o, c, a in ARIA_BODY)
+            + '</radialGradient>',
+            '<radialGradient id="aSheen"><stop offset="0" stop-color="#fff" stop-opacity=".75"/>'
+            '<stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>']
+    out = [f'<circle cx="{n(cx)}" cy="{n(cy)}" r="{n(size * .7)}" fill="url(#aHalo)"/>',
+           f'<circle cx="{n(cx)}" cy="{n(cy)}" r="{n(D / 2)}" fill="url(#aBody)"/>']
+    for i, (c, s, R, lat, _, ph, o) in enumerate(ARIA_BLOBS):
+        z = (1 + math.cos(2 * math.pi * ph)) / 2          # nearer the front: bigger and brighter
+        bs = s * D * (.72 + .4 * z)
+        defs.append(f'<radialGradient id="aB{i}">{_gauss(c, o)}</radialGradient>')
+        out.append(f'<circle cx="{n(cx + math.sin(2 * math.pi * ph) * R * D)}" cy="{n(cy + lat * D)}" r="{n(bs / 2)}" '
+                   f'fill="url(#aB{i})" opacity="{.22 + .78 * z:.3f}"/>')
+    out.append(f'<image href="data:image/png;base64,{grain}" x="{n(x0)}" y="{n(y0)}" width="{n(D)}" height="{n(D)}"/>')
+    out.append(f'<circle cx="{n(x0 + D * .34)}" cy="{n(y0 + D * .26)}" r="{n(D * .2)}" fill="url(#aSheen)"/>')
+    eyeW, eyeH, gap = size * .078, size * .112, size * .104
+    for side in (-1, 1):
+        ex, ey = cx + side * gap - eyeW / 2, top + size * .41 - eyeH / 2
+        out.append(f'<rect x="{n(ex)}" y="{n(ey)}" width="{n(eyeW)}" height="{n(eyeH)}" rx="{n(eyeW / 2)}" fill="{EYE}"/>')
+        out.append(f'<circle cx="{n(ex + eyeW * .34)}" cy="{n(ey + eyeH * .34)}" r="{n(eyeW * .17)}" fill="#fff"/>')
+    my, half, sag = top + size * .55, size * .078, size * .042
+    out.append(f'<path d="M{n(cx - half)} {n(my)}Q{n(cx)} {n(my + 2 * sag)} {n(cx + half)} {n(my)}" fill="none" '
+               f'stroke="{EYE}" stroke-width="{n(size * .017)}" stroke-linecap="round"/>')
+    return f'<defs>{"".join(defs)}</defs>' + "".join(out)
 
 
 def meet_aria(cx: float, cy: float) -> str:
-    """On the yellow circle (the owner's pick, 2 Oct): MEET ARIA, her face, the count."""
-    mono = 'font-family="GeistMono" text-anchor="middle" fill="#111111"'
-    return (f'<text x="{n(cx)}" y="{n(cy - 114)}" {mono} font-weight="600" font-size="13" letter-spacing="3.5">MEET ARIA</text>'
-            + aria_face(cx, cy - 50, 50)
-            + f'<text x="{n(cx)}" y="{n(cy + 68)}" font-family="Bricolage" font-weight="800" font-size="66" fill="#111111" '
-              f'text-anchor="middle" letter-spacing="-2.5" style="font-variation-settings:&quot;opsz&quot; 96">{COUNT}</text>'
-            + f'<text x="{n(cx)}" y="{n(cy + 94)}" {mono} font-weight="500" font-size="13" letter-spacing="2.4">{COUNT_LABEL}</text>')
-
+    """On the yellow circle (the owner's picks, 2 Oct): MEET ARIA, Aria as in the app on a
+    little round of the app's own blush grid paper, and the count in white on a red tag."""
+    dx, dy, dr = cx, cy - 40, 74                  # the round of blush paper she sits on
+    cell = 12
+    grid = "".join(f'<path d="M{dx - dr + k * cell} {dy - dr}V{dy + dr}M{dx - dr} {dy - dr + k * cell}H{dx + dr}"/>'
+                   for k in range(int(2 * dr / cell) + 1))
+    tag_w, tag_h, ty = 196, 70, cy + 70
+    return (f'<text x="{n(cx)}" y="{n(cy - 126)}" font-family="GeistMono" font-weight="600" font-size="13" '
+            f'letter-spacing="3.5" text-anchor="middle" fill="#111111">MEET ARIA</text>'
+            f'<clipPath id="paper"><circle cx="{n(dx)}" cy="{n(dy)}" r="{dr}"/></clipPath>'
+            f'<circle cx="{n(dx)}" cy="{n(dy)}" r="{dr}" fill="#FBF4F1"/>'
+            f'<g clip-path="url(#paper)"><g stroke="#8B6A5C" stroke-opacity=".16" stroke-width=".7">{grid}</g>'
+            + aria(dx, dy + 4, 158) + '</g>'
+            + f'<g transform="rotate(-4 {n(cx)} {n(ty + tag_h / 2)})">'
+              f'<rect x="{n(cx - tag_w / 2)}" y="{n(ty + 4)}" width="{tag_w}" height="{tag_h}" fill="#000" opacity=".18" filter="url(#soft)"/>'
+              f'<rect x="{n(cx - tag_w / 2)}" y="{n(ty)}" width="{tag_w}" height="{tag_h}" fill="#FF2A00"/>'
+              f'<text x="{n(cx)}" y="{n(ty + 41)}" font-family="Bricolage" font-weight="800" font-size="42" fill="#fff" '
+              f'text-anchor="middle" letter-spacing="-1.5" style="font-variation-settings:&quot;opsz&quot; 96">{COUNT}</text>'
+              f'<text x="{n(cx)}" y="{n(ty + 59)}" font-family="GeistMono" font-weight="600" font-size="12" fill="#fff" '
+              f'text-anchor="middle" letter-spacing="2.6">{COUNT_LABEL}</text></g>')
 
 def giant(ch: str, x: float, y: float, size: float, color: str) -> str:
     return (f'<text x="{n(x)}" y="{n(y)}" font-family="Bricolage" font-weight="800" font-size="{n(size)}" fill="{color}" '
@@ -302,7 +338,6 @@ def linkedin(center: str | None = None) -> tuple[int, int, str]:
         sticker(500, 14, 70, 12),
         sparkle(604, 372, 16, C["white"]),
         sparkle(1550, 196, 15, C["white"]),
-        github_tag(1500, 368, 16),
         sparkle(950, 362, 12, C["white"]),
     ])
 
