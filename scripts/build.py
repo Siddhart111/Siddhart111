@@ -231,7 +231,8 @@ def phone() -> tuple[int, int, str]:
 def linkedin() -> tuple[int, int, str]:
     """LinkedIn's banner, 1584 x 396 (4:1). LinkedIn lays the profile photo over the bottom
     left (about x < 380, y > 230 here) and phones trim the sides a little, so the name and
-    the photo sit in the middle and the right; only the letters circle runs under the photo."""
+    the yellow circle sit in the middle and the right; only the letters circle runs under the photo.
+    No photo of me here (the owner, 2 Oct): LinkedIn shows it beside the banner anyway."""
     W, H = 1584, 396
     return W, H, "".join([
         f'<rect width="{W}" height="{H}" fill="{C["violet"]}"/>',
@@ -249,9 +250,9 @@ def linkedin() -> tuple[int, int, str]:
         f'letter-spacing="-1.6" style="font-variation-settings:\'opsz\' 96">{NAME}</text>',
         f'<text x="971" y="121" font-family="GeistMono" font-weight="500" font-size="14" fill="{C["ink"]}" '
         f'letter-spacing="1.7">{CAPTION}</text>',
-        f'<circle cx="868" cy="318" r="92" fill="{C["yellow"]}"/>',
+        f'<circle cx="868" cy="318" r="92" fill="{C["red"]}"/>',          # red now, behind the yellow
         polka(1060, 418, 96, "pk", 30, 7.5),
-        photo(712, 200, 168, "pc", 2),
+        f'<circle cx="712" cy="200" r="168" fill="{C["yellow"]}"/>',     # where my photo was (the owner, 2 Oct)
         sticker(1196, 206, 92, 9),
         sticker(120, 110, 76, -12),
         sticker(500, 14, 70, 12),
