@@ -182,9 +182,11 @@ ARIA_HALO = [(.3, 0), (.44, .14), (.58, .17), (.7, .12), (.82, .055), (.92, .015
 EYE = "#2B1D22"
 
 
-def aria(cx: float, cy: float, size: float) -> str:
+def aria(cx: float, cy: float, size: float, peek: float = 0) -> str:
     """Her face as in the app: a soft rose pearl that melts into the page, colour drifting
-    inside, a glossy spot, the grain, two espresso eyes with a highlight, a line of a smile."""
+    inside, a glossy spot, the grain, two espresso eyes with a highlight, a line of a smile.
+    peek -1: tucked into a left edge like on Meet Aria - her face turns in (moves right and
+    tilts toward the middle) and her eyes look in, the highlights crossing to their right."""
     D = size * .92
     x0, y0 = cx - D / 2, cy - D / 2               # the pearl's box
     top = cy - size / 2                           # the face box (eyes at .41, smile at .55)
@@ -207,14 +209,18 @@ def aria(cx: float, cy: float, size: float) -> str:
     out.append(f'<image href="data:image/png;base64,{grain}" x="{n(x0)}" y="{n(y0)}" width="{n(D)}" height="{n(D)}"/>')
     out.append(f'<circle cx="{n(x0 + D * .34)}" cy="{n(y0 + D * .26)}" r="{n(D * .2)}" fill="url(#aSheen)"/>')
     eyeW, eyeH, gap = size * .078, size * .112, size * .104
+    look = -peek                                  # tucked in on the left: she looks right, into the page
+    fx = cx + look * size * .14                   # AriaPearl: shift + lookX, each .07 of her size
+    face = [f'<g transform="rotate({n(look * 6)} {n(fx)} {n(top + size * .41)})">']
     for side in (-1, 1):
-        ex, ey = cx + side * gap - eyeW / 2, top + size * .41 - eyeH / 2
-        out.append(f'<rect x="{n(ex)}" y="{n(ey)}" width="{n(eyeW)}" height="{n(eyeH)}" rx="{n(eyeW / 2)}" fill="{EYE}"/>')
-        out.append(f'<circle cx="{n(ex + eyeW * .34)}" cy="{n(ey + eyeH * .34)}" r="{n(eyeW * .17)}" fill="#fff"/>')
+        ex, ey = fx + side * gap - eyeW / 2, top + size * .41 - eyeH / 2
+        shine = .34 if look <= 0 else .34 + .32 * look     # the highlight crosses right as she looks right
+        face.append(f'<rect x="{n(ex)}" y="{n(ey)}" width="{n(eyeW)}" height="{n(eyeH)}" rx="{n(eyeW / 2)}" fill="{EYE}"/>')
+        face.append(f'<circle cx="{n(ex + eyeW * shine)}" cy="{n(ey + eyeH * .34)}" r="{n(eyeW * .17)}" fill="#fff"/>')
     my, half, sag = top + size * .55, size * .078, size * .042
-    out.append(f'<path d="M{n(cx - half)} {n(my)}Q{n(cx)} {n(my + 2 * sag)} {n(cx + half)} {n(my)}" fill="none" '
-               f'stroke="{EYE}" stroke-width="{n(size * .017)}" stroke-linecap="round"/>')
-    return f'<defs>{"".join(defs)}</defs>' + "".join(out)
+    face.append(f'<path d="M{n(fx - half)} {n(my)}Q{n(fx)} {n(my + 2 * sag)} {n(fx + half)} {n(my)}" fill="none" '
+                f'stroke="{EYE}" stroke-width="{n(size * .017)}" stroke-linecap="round"/></g>')
+    return f'<defs>{"".join(defs)}</defs>' + "".join(out) + "".join(face)
 
 
 def meet_aria(cx: float, cy: float) -> str:
@@ -230,7 +236,9 @@ def meet_aria(cx: float, cy: float) -> str:
             f'<clipPath id="paper"><circle cx="{n(dx)}" cy="{n(dy)}" r="{dr}"/></clipPath>'
             f'<circle cx="{n(dx)}" cy="{n(dy)}" r="{dr}" fill="#FBF4F1"/>'
             f'<g clip-path="url(#paper)"><g stroke="#8B6A5C" stroke-opacity=".16" stroke-width=".7">{grid}</g>'
-            + aria(dx, dy + 4, 158) + '</g>'
+            # peeking in from the left edge of her round (the owner, 2 Oct), a bit bigger,
+            # about a third of her tucked out of sight
+            + aria(dx - dr + 196 * .12, dy + 6, 196, peek=-1) + '</g>'
             + f'<g transform="rotate(-4 {n(cx)} {n(ty + tag_h / 2)})">'
               f'<rect x="{n(cx - tag_w / 2)}" y="{n(ty + 4)}" width="{tag_w}" height="{tag_h}" fill="#000" opacity=".18" filter="url(#soft)"/>'
               f'<rect x="{n(cx - tag_w / 2)}" y="{n(ty)}" width="{tag_w}" height="{tag_h}" fill="#FF2A00"/>'
